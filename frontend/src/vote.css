@@ -130,21 +130,18 @@ button:disabled {
     color: #888;
 }
 
-.item-row {
+/* 按鈕群組排版 */
+.action-btn-group {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 12px 0;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 /* 刪除按鈕 */
 .delete-btn {
     width: auto !important;
-    /* 覆蓋掉原本 button 100% 的寬度 */
     padding: 4px 10px !important;
-    /* 縮小按鈕內距 */
     font-size: 12px !important;
-    /* 字體縮小 */
     background: #ff2828 !important;
     border: 1px solid #ff2828 !important;
     color: white !important;
@@ -182,4 +179,45 @@ button:disabled {
 
 .submit-btn {
     margin-top: 12px;
+}
+
+.role-selector-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 8px 12px;
+    border: 1px dashed #222;
+}
+
+.role-selector-group label {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.role-select {
+    padding: 6px 10px;
+    border: 1px solid #222;
+    background: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+}
+
+.role-select:focus {
+    border: 2px solid #111;
+}
+
+.admin-label {
+    color: #e67e22;
+}
+
+.admin-btn {
+    background: #e67e22;
+    border-color: #e67e22;
+}
+
+.admin-btn:hover:not(:disabled) {
+    background: white;
+    color: #e67e22;
 }
