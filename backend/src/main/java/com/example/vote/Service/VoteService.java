@@ -39,4 +39,14 @@ public class VoteService {
         // 刪除項目
         jdbcTemplate.update("EXEC sp_delete_item @item_id = ?", itemId);
     }
+
+    // 更新既有項目
+    @Transactional
+    public void updateItem(Integer itemId, String newName) {
+        try {
+            jdbcTemplate.update("EXEC sp_update_item ?, ?", itemId, newName);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 }

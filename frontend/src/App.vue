@@ -10,6 +10,9 @@
         <span class="item-count">({{ item.vote_count || 0 }} 票)</span>
       </label>
 
+      <button @click="handleUpdateItem(item.id, item.name)" class="edit-btn">
+              修改名稱
+      </button>
       </div>
 
     <hr />
@@ -94,6 +97,29 @@ const handleAddItem = async () => {
   } catch (error) {
     console.error('新增項目失敗:', error);
     alert('新增項目失敗，請檢查後端連線');
+  }
+};
+
+// 修改既有項目名稱
+const handleUpdateItem = async (itemId, oldName) => {
+  const newName = prompt(`請輸入投票項目 [${oldName}] 的全新名稱：`, oldName);
+
+  if (newName === null || !newName.trim()) return;
+  if (newName.trim() === oldName) return;
+
+  try {
+    const params = new URLSearchParams();
+    params.append('itemId', itemId);
+    params.append('newName', newName.trim());
+
+    await axios.put('http://localhost:8080/api/vote/item', params);
+
+    alert('已成功更新！');
+    await loadData();
+  } catch (error) {
+    console.error('更新失敗:', error);
+    // 捕捉後端資料庫拋出的重複名稱異常
+    alert('更新失敗！');
   }
 };
 
