@@ -45,18 +45,18 @@ VOTE/
 ## 專案本地啟動指南
 
 1. 後端啟動 (Backend Setup)
-# 進入後端專案資料夾
+進入後端專案資料夾
 cd backend
 
-# 使用專案內建的 Maven Wrapper 一鍵編譯並啟動伺服器
+使用專案內建的 Maven Wrapper 一鍵編譯並啟動伺服器
 .\mvnw.cmd spring-boot:run
 
 2. 前端啟動 (Frontend Setup)
-# 進入前端專案資料夾
+進入前端專案資料夾
 cd frontend
 
-# 安裝 Node 模組依賴
+安裝 Node 模組依賴
 npm install
 
-# 啟動本地開發伺服器
+啟動本地開發伺服器
 npm run dev
