@@ -1,0 +1,30 @@
+package com.example.vote.Service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class VoteService {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public VoteService(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public List<Map<String, Object>> getVoteResult() {
+        return jdbcTemplate.queryForList("EXEC sp_get_vote_result");
+    }
+
+    @Transactional
+    public void vote(String voter, Integer itemId) {
+        jdbcTemplate.update(
+            "EXEC sp_vote @voter=?, @item_id=?",
+            voter, itemId
+        );
+    }
+}
