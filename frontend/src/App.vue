@@ -18,12 +18,15 @@
 
     <div class="voter-form">
       <h3>進行投票</h3>
-      <div class="input-group">
+<div class="input-group">
         <label for="voterName">您的姓名：</label>
-        <input id="voterName" v-model="voter" placeholder="請輸入姓名" />
+        <div class="input-wrapper">
+          <input id="voterName" v-model="voter" placeholder="請輸入姓名" />
+          <span class="hint-text">* 姓名非必填，可直接送出！！</span>
+        </div>
       </div>
 
-      <button @click="submitVote" :disabled="!voter || selected.length === 0">
+      <button @click="submitVote" :disabled="selected.length === 0">
         確認送出投票
       </button>
     </div>

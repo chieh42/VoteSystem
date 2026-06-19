@@ -31,7 +31,8 @@ public class VoteController {
 
     @PostMapping("/vote")
     public void vote(
-            @RequestParam String voter,
+            // 改為非必填
+            @RequestParam(required = false, defaultValue = "匿名") String voter,
             @RequestParam Integer itemId
     ) {
         voteService.vote(voter, itemId);

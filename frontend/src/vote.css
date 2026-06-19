@@ -83,11 +83,20 @@ input[type="text"] {
     border-radius: 0;
     font-size: 14px;
     background: #fff;
+    box-sizing: border-box;
 }
 
 input:focus {
     outline: none;
     border: 2px solid #111;
+}
+
+.hint-text {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-top: 6px;
+    text-align: left;
 }
 
 button {
