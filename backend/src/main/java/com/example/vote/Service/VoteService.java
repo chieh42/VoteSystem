@@ -27,4 +27,16 @@ public class VoteService {
             voter, itemId
         );
     }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void addItem(String itemName) {
+        // 新增項目
+        jdbcTemplate.update("EXEC sp_add_item @item_name = ?", itemName);
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void deleteItem(Integer itemId) {
+        // 刪除項目
+        jdbcTemplate.update("EXEC sp_delete_item @item_id = ?", itemId);
+    }
 }

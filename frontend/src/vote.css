@@ -122,3 +122,31 @@ button:disabled {
     background: #ddd;
     color: #888;
 }
+
+/* 讓投票項目那一列變成左右分開的 flex 佈局 */
+.item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px 0;
+}
+
+/* 紅色極簡刪除按鈕 */
+.delete-btn {
+    width: auto !important;
+    /* 覆蓋掉原本 button 100% 的寬度 */
+    padding: 4px 10px !important;
+    /* 縮小按鈕內距 */
+    font-size: 12px !important;
+    /* 字體縮小 */
+    background: #ff4444 !important;
+    /* 警告紅 */
+    border: 1px solid #ff4444 !important;
+    color: white !important;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: white !important;
+    color: #ff4444 !important;
+}

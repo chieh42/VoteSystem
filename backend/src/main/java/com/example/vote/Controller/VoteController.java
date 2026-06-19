@@ -1,16 +1,17 @@
 package com.example.vote.Controller;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.vote.Service.VoteService;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -36,5 +37,17 @@ public class VoteController {
             @RequestParam Integer itemId
     ) {
         voteService.vote(voter, itemId);
+    }
+
+    //新增投票項目 API
+    @PostMapping("/item")
+    public void addItem(@RequestParam String itemName) {
+        voteService.addItem(itemName);
+    }
+
+    // 刪除投票項目 API
+    @DeleteMapping("/item")
+    public void deleteItem(@RequestParam Integer itemId) {
+        voteService.deleteItem(itemId);
     }
 }
