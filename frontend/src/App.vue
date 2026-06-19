@@ -77,6 +77,7 @@ const submitVote = async () => {
 
     // 清空狀態並重新刷票數
     selected.value = []
+    voter.value = ''
     loadData()
   } catch (error) {
     alert('投票失敗，請檢查網路連線')
