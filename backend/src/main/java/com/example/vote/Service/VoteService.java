@@ -12,14 +12,18 @@ public class VoteService {
 
     private final JdbcTemplate jdbcTemplate;
 
+    // 注入
     public VoteService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // 查詢
+    @Transactional(readOnly = true)
     public List<Map<String, Object>> getVoteResult() {
         return jdbcTemplate.queryForList("EXEC sp_get_vote_result");
     }
 
+    // 投票
     @Transactional
     public void vote(String voter, Integer itemId) {
         jdbcTemplate.update(
@@ -28,25 +32,25 @@ public class VoteService {
         );
     }
 
-    @org.springframework.transaction.annotation.Transactional
+    // 新增
+    @Transactional
     public void addItem(String itemName) {
-        // 新增項目
         jdbcTemplate.update("EXEC sp_add_item @item_name = ?", itemName);
     }
 
-    @org.springframework.transaction.annotation.Transactional
+    // 刪除
+    @Transactional
     public void deleteItem(Integer itemId) {
-        // 刪除項目
         jdbcTemplate.update("EXEC sp_delete_item @item_id = ?", itemId);
     }
 
-    // 更新既有項目
+    // 更新
     @Transactional
     public void updateItem(Integer itemId, String newName) {
         try {
             jdbcTemplate.update("EXEC sp_update_item ?, ?", itemId, newName);
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException("更新項目失敗: " + itemId, e);
         }
     }
 }
