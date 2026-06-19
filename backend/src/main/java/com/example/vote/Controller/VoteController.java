@@ -1,5 +1,6 @@
 package com.example.vote.Controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,6 @@ public class VoteController {
 
     private final VoteService voteService;
 
-    // 建構子
     public VoteController(VoteService voteService) {
         this.voteService = voteService;
     }
@@ -37,35 +37,28 @@ public class VoteController {
     }
 
     @PostMapping("/vote")
-    @Operation(summary = "執行使用者投票", description = "送出投票紀錄，姓名未填則為匿名投票")
+    @Operation(summary = "執行使用者投票", description = "送出投票紀錄，自動綁定當前登入使用者")
     public void vote(
-            /* @RequestParam String voter */
-            // 非必填
-            @RequestParam(required = false, defaultValue = "匿名") String voter,
+            Principal principal, // Spring Security 會自動注入當前登入者的資訊
             @RequestParam Integer itemId) {
-                voteService.vote(voter, itemId);
-            }
 
-    //新增投票項目 API
-    @PostMapping("/item")
-    @Operation(summary = "新增投票項目", description = "建立新的投票選項+要擋重複名稱")
+        // 從 Token 解析出來的用戶名（不讓前端傳字串，防止冒名投票）
+        String username = principal.getName();
+        voteService.vote(username, itemId);
+    }
+
+    // 新增投票項目 API (調整網址以對齊 SecurityConfig 權限控管)
+    @PostMapping("/items/add")
+    @Operation(summary = "新增投票項目", description = "【管理員專用】建立新的投票選項，會檢查重複名稱")
     public void addItem(@RequestParam String itemName) {
         voteService.addItem(itemName);
     }
 
-    // 刪除投票項目 API
-    /*
-    @DeleteMapping("/item")
-    @Operation(summary = "刪除投票項目", description = "移除指定項目，資料庫會清除其歷史投票紀錄")
-    public void deleteItem(@RequestParam Integer itemId) {
-        voteService.deleteItem(itemId);
-    }
-    */
-
-    @PutMapping("/item")
-    @Operation(summary = "更新既有投票項目", description = "修改指定 ID 的項目名稱")
+    // 更新既有投票項目 (調整網址以對齊 SecurityConfig 權限控管)
+    @PutMapping("/items/update")
+    @Operation(summary = "更新既有投票項目", description = "【管理員專用】修改指定 ID 的項目名稱")
     public void updateItem(
-            @Parameter(description = "要修改的項目 item") @RequestParam Integer itemId,
+            @Parameter(description = "要修改的項目 ID") @RequestParam Integer itemId,
             @Parameter(description = "全新項目名稱（例如：電競滑鼠）") @RequestParam String newName) {
         voteService.updateItem(itemId, newName);
     }

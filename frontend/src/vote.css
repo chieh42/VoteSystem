@@ -66,6 +66,72 @@ input[type="checkbox"] {
     white-space: nowrap;
 }
 
+/* 🔒 會員登入專用全新精緻樣式 */
+.auth-section {
+    background: #fafafa;
+    padding: 16px;
+    border: 1px solid #222;
+    margin-bottom: 20px;
+}
+
+.auth-form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.auth-form-group label {
+    width: 55px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.auth-form-group input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #222;
+    font-size: 14px;
+}
+
+.auth-btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.auth-btn-group button {
+    padding: 8px 16px;
+}
+
+.demo-account-hint {
+    font-size: 12px;
+    color: #777;
+    border-top: 1px dashed #ccc;
+    padding-top: 10px;
+    line-height: 1.5;
+}
+
+.login-status-box {
+    font-size: 14px;
+    color: #222;
+}
+
+.logout-btn {
+    width: auto !important;
+    background: #ff2828 !important;
+    border-color: #ff2828 !important;
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    margin-top: 10px;
+}
+
+.logout-btn:hover {
+    background: white !important;
+    color: #ff2828 !important;
+}
+
+/* 原本的輸入框與群組 */
 .voter-form {
     display: flex;
     flex-direction: column;
@@ -83,7 +149,8 @@ input[type="checkbox"] {
     font-weight: 600;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="password"] {
     width: 100%;
     padding: 10px;
     border: 1px solid #222;
@@ -130,40 +197,14 @@ button:disabled {
     color: #888;
 }
 
-.item-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 12px 0;
-}
-
-/* 刪除按鈕 */
-.delete-btn {
-    width: auto !important;
-    /* 覆蓋掉原本 button 100% 的寬度 */
-    padding: 4px 10px !important;
-    /* 縮小按鈕內距 */
-    font-size: 12px !important;
-    /* 字體縮小 */
-    background: #ff2828 !important;
-    border: 1px solid #ff2828 !important;
-    color: white !important;
-    cursor: pointer;
-}
-
-.delete-btn:hover {
-    background: white !important;
-    color: #ff2828 !important;
-}
-
-/* 編輯按鈕 */
+/* 編輯與刪除按鈕 */
 .edit-btn {
     width: auto !important;
     background-color: transparent;
     color: #e67e22;
     border: 1px solid #e67e22;
     padding: 4px 10px;
-    border-radius: 4px;
+    border-radius: 0;
     cursor: pointer;
     font-size: 13px;
     flex-shrink: 0;
@@ -175,7 +216,6 @@ button:disabled {
     color: white;
 }
 
-/* 新增投票區塊 */
 .admin-section .input-group {
     margin-bottom: 12px;
 }

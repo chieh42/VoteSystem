@@ -1,47 +1,27 @@
 package com.example.vote.Entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(name = "Vote_Record")
+@Data
 public class VoteRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "voter")
-    private String voter;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "item_id")
-    private Integer itemId;
+    @ManyToOne
+    @JoinColumn(name = "item_id", nullable = false)
+    private VoteItem voteItem;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getVoter() {
-        return voter;
-    }
-
-    public void setVoter(String voter) {
-        this.voter = voter;
-    }
-
-    public Integer getItemId() {
-        return itemId;
-    }
-
-    public void setItemId(Integer itemId) {
-        this.itemId = itemId;
-    }
+    @Column(name = "vote_time", insertable = false, updatable = false)
+    private LocalDateTime voteTime;
 }
