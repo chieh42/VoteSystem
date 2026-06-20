@@ -14,7 +14,7 @@ import com.example.vote.Repository.UserRepository;
 public class VoteService {
 
     private final JdbcTemplate jdbcTemplate;
-    private final UserRepository userRepository; // 引入 UserRepository 查詢使用者
+    private final UserRepository userRepository; // 查詢使用者
 
     // 建構子注入
     public VoteService(JdbcTemplate jdbcTemplate, UserRepository userRepository) {
@@ -28,18 +28,16 @@ public class VoteService {
 
     @Transactional
     public void vote(String username, Integer itemId) {
-        // 1. 透過帳號查出使用者實體
+        // 透過帳號查出使用者實體
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("錯誤：找不到該投票使用者！"));
 
-        // 2. 將 user.getId() 帶入修改後的 sp_vote 預存程序
         try {
             jdbcTemplate.update(
-                "EXEC sp_vote @user_id=?, @item_id=?",
+                "EXEC sp_vote @voter=?, @item_id=?",
                 user.getId(), itemId
             );
         } catch (Exception e) {
-            // 捕捉資料庫拋出的錯誤（例如：已投過此項目的 RAISERROR）
             throw new RuntimeException(e.getMessage());
         }
     }

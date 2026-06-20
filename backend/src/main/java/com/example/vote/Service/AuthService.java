@@ -1,11 +1,12 @@
 package com.example.vote.Service;
 
-import com.example.vote.Entity.User;
-import com.example.vote.Repository.UserRepository;
-import com.example.vote.Security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.example.vote.Entity.User;
+import com.example.vote.Repository.UserRepository;
+import com.example.vote.Security.JwtTokenProvider;
 
 @Service
 public class AuthService {
@@ -46,7 +47,7 @@ public class AuthService {
         return tokenProvider.generateToken(user.getUsername(), user.getRole());
     }
 
-    // 💡 補上這個方法：讓 Controller 可以透過帳號撈出完整的 User 資料
+    // AuthController 可以透過帳號撈出完整的 User 資料
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("錯誤：找不到該使用者！"));

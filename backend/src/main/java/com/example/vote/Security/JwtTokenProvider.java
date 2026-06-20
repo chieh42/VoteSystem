@@ -1,18 +1,20 @@
 package com.example.vote.Security;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
+import org.springframework.stereotype.Component;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    // 測試用金鑰（長度必須大於 256-bit，至少 32 個字元）
+    // 測試用金鑰
     private final String JWT_SECRET = "YourSuperSecretKeyForVoteSystemProject2026";
     private final long JWT_EXPIRATION_MS = 86400000; // Token 有效期 24 小時
 

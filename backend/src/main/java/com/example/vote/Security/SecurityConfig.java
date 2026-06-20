@@ -1,5 +1,7 @@
 package com.example.vote.Security;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,8 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -34,25 +34,26 @@ public class SecurityConfig {
         http
             .cors(cors -> cors.configurationSource(request -> {
                 var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
-                corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173")); // 允許你的 Vue 前端網址
+                corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173"));
                 corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 corsConfiguration.setAllowedHeaders(List.of("*"));
+                corsConfiguration.setAllowCredentials(true); // 攜帶認證憑據，跨域
                 return corsConfiguration;
             }))
             .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 關閉 Session（前後端分離不需狀態）
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 關閉 Session
             .authorizeHttpRequests(auth -> auth
-            // 1. 允許所有人免登入看投票結果、登入註冊、以及 API 文件
-            .requestMatchers("/api/vote/result", "/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                // 大家免登入看投票結果、登入註冊、以及 API 文件
+                .requestMatchers("/api/vote/result", "/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 
-            // 2. 限制必須是管理員才能「新增」或「更新」投票項目
-            .requestMatchers("/api/vote/items/add", "/api/vote/items/update").hasRole("ADMIN")
+                // 限制必須是管理員才能增更刪投票項目
+                .requestMatchers("/api/vote/items/add", "/api/vote/items/update", "/api/vote/items/delete").hasRole("ADMIN")
 
-            // 3. 其他所有請求（例如進行投票）必須登入
-            .anyRequest().authenticated()
-        );
+                // 使用功能必須登入
+                .anyRequest().authenticated()
+            );
 
-        // 將我們自訂的 JWT 過濾器加到 Spring Security 流程中
+        //  JWT 過濾器加到 Spring Security
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

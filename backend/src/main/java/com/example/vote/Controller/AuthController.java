@@ -1,23 +1,29 @@
 package com.example.vote.Controller;
 
-import com.example.vote.Service.AuthService;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.vote.Service.AuthService;
+
+import lombok.Data;
+
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*") // 允許前端 Vue 跨域呼叫
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     @Autowired
     private AuthService authService;
 
-    // 1. 會員註冊接口
+    // 會員註冊
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody AuthRequest request) {
         try {
@@ -30,7 +36,7 @@ public class AuthController {
         }
     }
 
-    // 2. 會員登入接口（同時回傳 Token 與 該帳號的真實 Role 權限）
+    // 會員登入（回傳 Token 與 該帳號的真實 Role 權限）
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
         try {
@@ -44,7 +50,7 @@ public class AuthController {
             Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("tokenType", "Bearer");
-            response.put("role", user.getRole()); // 動態返回角色，不再由前端寫死！
+            response.put("role", user.getRole());
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -53,7 +59,7 @@ public class AuthController {
     }
 }
 
-// DTO 類別：用來接收前端傳遞過來的 JSON 帳密格式
+// DTO
 @Data
 class AuthRequest {
     private String username;

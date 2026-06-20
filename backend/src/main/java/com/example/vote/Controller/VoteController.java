@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,27 +40,34 @@ public class VoteController {
     @PostMapping("/vote")
     @Operation(summary = "執行使用者投票", description = "送出投票紀錄，自動綁定當前登入使用者")
     public void vote(
-            Principal principal, // Spring Security 會自動注入當前登入者的資訊
+            Principal principal, // Spring Security 注入登入者的資訊
             @RequestParam Integer itemId) {
 
-        // 從 Token 解析出來的用戶名（不讓前端傳字串，防止冒名投票）
+        // Token 解析用戶名
         String username = principal.getName();
         voteService.vote(username, itemId);
     }
 
-    // 新增投票項目 API (調整網址以對齊 SecurityConfig 權限控管)
+    // 新增投票項目
     @PostMapping("/items/add")
-    @Operation(summary = "新增投票項目", description = "【管理員專用】建立新的投票選項，會檢查重複名稱")
+    @Operation(summary = "新增投票項目", description = "建立新的投票選項，會檢查重複名稱")
     public void addItem(@RequestParam String itemName) {
         voteService.addItem(itemName);
     }
 
-    // 更新既有投票項目 (調整網址以對齊 SecurityConfig 權限控管)
+    // 更新既有投票項目
     @PutMapping("/items/update")
-    @Operation(summary = "更新既有投票項目", description = "【管理員專用】修改指定 ID 的項目名稱")
+    @Operation(summary = "更新既有投票項目", description = "修改指定 ID 的項目名稱")
     public void updateItem(
             @Parameter(description = "要修改的項目 ID") @RequestParam Integer itemId,
             @Parameter(description = "全新項目名稱（例如：電競滑鼠）") @RequestParam String newName) {
         voteService.updateItem(itemId, newName);
+    }
+
+    // 刪除投票項目
+    @DeleteMapping("/items/delete")
+    @Operation(summary = "刪除既有投票項目", description = "刪除指定 ID 的投票項目，會連同相關投票紀錄一併清除")
+    public void deleteItem(@Parameter(description = "要刪除的項目 ID") @RequestParam Integer itemId) {
+        voteService.deleteItem(itemId);
     }
 }
