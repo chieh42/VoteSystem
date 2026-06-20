@@ -4,7 +4,6 @@
     <hr />
 
     <div class="auth-section">
-
       <div v-if="!isLoggedIn">
         <h3>會員登入</h3>
 
@@ -24,15 +23,15 @@
         </div>
 
         <div class="demo-account-hint">
-          <strong>測試專用帳密（Demo Accounts）：</strong><br />
-          一般使用者：<code>user1</code> / 密碼 <code>user123</code> (僅能投票)<br />
-          系統管理員：<code>admin</code> / 密碼 <code>admin123</code> (可修改與新增項目)
+          <strong>測試專用（Demo Accounts）：</strong><br />
+          一般使用者：<code>user1</code> / 密碼 <code>user123</code><br />
+          系統管理員：<code>admin</code> / 密碼 <code>admin123</code>
         </div>
       </div>
 
       <div v-else class="login-status-box">
         <div>
-          當前登入：<strong>{{ currentUsername }}</strong>
+          使用者：<strong>{{ currentUsername }}</strong>
           <span> | </span>
           權限：<span :style="{ color: currentUserRole === 'admin' ? '#e67e22' : '#111', fontWeight: 'bold' }">{{ currentUserRole.toUpperCase() }}</span>
         </div>
@@ -60,7 +59,7 @@
     <hr />
 
     <div v-if="!isLoggedIn" class="hint-text" style="color: #ff2828; font-weight: bold; margin-bottom: 12px;">
-      * 請先在上方登入系統，即可解鎖投票功能。
+      * 先登入系統，才可以解鎖投票功能呦。
     </div>
 
     <button @click="submitVote" :disabled="selected.length === 0 || !isLoggedIn" class="submit-btn">
@@ -86,10 +85,10 @@ import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import './vote.css'
 
+// 宣告所有響應式變數
 const voteResults = ref([])
 const selected = ref([])
 const newItemName = ref('')
-
 const authForm = ref({ username: '', password: '' })
 
 const currentUsername = ref(localStorage.getItem('username') || '')
@@ -98,9 +97,15 @@ const jwtToken = ref(localStorage.getItem('jwt_token') || '')
 
 const isLoggedIn = computed(() => !!jwtToken.value)
 
-const getAuthConfig = () => {
-  return { headers: { 'Authorization': `Bearer ${jwtToken.value}` } }
-}
+// 設定 Axios 攔截器（jwtToken.value）
+axios.interceptors.request.use(config => {
+  if (jwtToken.value) {
+    config.headers.Authorization = `Bearer ${jwtToken.value}`
+  }
+  return config;
+}, error => {
+  return Promise.reject(error);
+});
 
 // 會員註冊
 const handleRegister = async () => {
@@ -158,22 +163,21 @@ const handleLogout = () => {
   selected.value = []
 }
 
-// 讀取資料
+// 讀取資料（已精簡：攔截器會自動帶 Token）
 const loadData = async () => {
   try {
-    const res = await axios.get('http://localhost:8080/api/vote/result', getAuthConfig())
+    const res = await axios.get('http://localhost:8080/api/vote/result')
     voteResults.value = res.data
   } catch (error) {
     console.error('讀取失敗：', error)
   }
 }
 
-// 送出投票
+// 送出投票（攔截器會帶 Token）
 const submitVote = async () => {
   try {
     for (let id of selected.value) {
       await axios.post('http://localhost:8080/api/vote/vote', null, {
-        headers: getAuthConfig().headers,
         params: { itemId: id }
       })
     }
@@ -185,42 +189,42 @@ const submitVote = async () => {
   }
 }
 
-// 新增投票項目【管理員】
+// 新增投票項目-管理員
 const handleAddItem = async () => {
   try {
-    const params = new URLSearchParams()
-    params.append('itemName', newItemName.value)
-
-    await axios.post('http://localhost:8080/api/vote/items/add', params, getAuthConfig())
+    await axios.post('http://localhost:8080/api/vote/items/add', null, {
+      params: { itemName: newItemName.value }
+    })
     alert('新增成功！')
     newItemName.value = ''
     await loadData()
   } catch (error) {
     if (error.response?.status === 403) {
-      alert('權限不足：只有管理員能新增項目！')
+      alert('權限不足或項目名稱重複！')
     } else {
       alert('新增項目失敗')
     }
   }
 }
 
-// 修改既有項目名稱【管理員】
+// 修改既有項目名稱-管理員
 const handleUpdateItem = async (itemId, oldName) => {
   const newName = prompt(`請輸入投票項目 [${oldName}] 的全新名稱：`, oldName)
   if (newName === null || !newName.trim()) return
   if (newName.trim() === oldName) return
 
   try {
-    const params = new URLSearchParams()
-    params.append('itemId', itemId)
-    params.append('newName', newName.trim())
-
-    await axios.put('http://localhost:8080/api/vote/items/update', params, getAuthConfig())
+    await axios.put('http://localhost:8080/api/vote/items/update', null, {
+      params: {
+        itemId: itemId,
+        newName: newName.trim()
+      }
+    })
     alert('已成功更新！')
     await loadData()
   } catch (error) {
     if (error.response?.status === 403) {
-      alert('權限不足：只有管理員能修改項目名稱！')
+      alert('權限不足或項目名稱重複！')
     } else {
       alert('更新失敗！')
     }
