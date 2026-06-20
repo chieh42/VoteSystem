@@ -1,11 +1,15 @@
 package com.example.vote.Entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 @Data
 public class User {
 
@@ -16,12 +20,9 @@ public class User {
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
-    @Column(name = "password_hash", nullable = false, length = 255)
+    @Column(nullable = false, length = 255)
     private String password;
 
     @Column(nullable = false, length = 20)
     private String role = "user";
-
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private LocalDateTime createdAt;
 }

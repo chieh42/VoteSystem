@@ -1,9 +1,18 @@
-
 -- 1. 建立資料庫
 CREATE DATABASE VoteSystem;
 GO
 
 USE VoteSystem;
+GO
+
+-- 建立使用者資料表 (User Entity)
+CREATE TABLE [users]
+(
+    [id] INT IDENTITY(1,1) PRIMARY KEY,
+    [username] VARCHAR(50) NOT NULL UNIQUE,
+    [password] VARCHAR(255) NOT NULL,
+    [role] VARCHAR(20) NOT NULL DEFAULT 'user'
+);
 GO
 
 -- 建立投票項目資料表
@@ -14,18 +23,24 @@ CREATE TABLE Vote_Item
 );
 GO
 
--- 投票紀錄資料表
+-- 投票紀錄資料表 (VoteRecord Entity)
 CREATE TABLE Vote_Record
 (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    voter NVARCHAR(50) NULL,
+    voter_id INT NULL,
     item_id INT NOT NULL,
     vote_time DATETIME DEFAULT GETDATE(),
-    CONSTRAINT FK_VoteRecord_VoteItem FOREIGN KEY (item_id) REFERENCES Vote_Item(id)
+    CONSTRAINT FK_VoteRecord_User FOREIGN KEY (voter_id) REFERENCES [users](id),
+    CONSTRAINT FK_VoteRecord_VoteItem FOREIGN KEY (item_id) REFERENCES Vote_Item(id) ON DELETE CASCADE
 );
 GO
 
---初始資料 (DML)+ 防止資料衝突
+-- 初始資料 (DML)　＋　測資
+INSERT INTO [users]
+    (username, password, role)
+VALUES
+    ('admin', '$2a$10$7v1bF24r8Kszw/pE5eS9Ke3Wd78d21hZ.v3J6Zg9b16B4XN/wGyG.', 'admin');
+
 IF NOT EXISTS (SELECT 1
 FROM Vote_Item)
 BEGIN
@@ -37,39 +52,27 @@ BEGIN
         (name)
     VALUES
         (N'滑鼠');
-
-    INSERT INTO Vote_Record
-        (voter, item_id)
-    VALUES
-        (N'Leo', 1);
-    INSERT INTO Vote_Record
-        (voter, item_id)
-    VALUES
-        (N'Sandy', 1);
-    INSERT INTO Vote_Record
-        (voter, item_id)
-    VALUES
-        (N'Sandy', 2);
-    INSERT INTO Vote_Record
-        (voter, item_id)
-    VALUES
-        (N'Randy', 2);
-    INSERT INTO Vote_Record
-        (voter, item_id)
-    VALUES
-        (N'RSY', 2);
 END;
 GO
 
---Stored Procedures
+-- 投票預存程序 (防止重複投票)
 CREATE PROCEDURE sp_vote
-    @voter NVARCHAR(50),
+    @voter INT,
     @item_id INT
 AS
 BEGIN
     SET NOCOUNT ON;
+
+    IF EXISTS (SELECT 1
+    FROM Vote_Record
+    WHERE voter_id = @voter AND item_id = @item_id)
+    BEGIN
+        RAISERROR (N'錯誤：您已經投過這個項目了，請勿重複投票！', 16, 1);
+        RETURN;
+    END
+
     INSERT INTO Vote_Record
-        (voter, item_id)
+        (voter_id, item_id)
     VALUES
         (@voter, @item_id);
 END;
@@ -109,6 +112,25 @@ BEGIN
         (name)
     VALUES
         (RTRIM(LTRIM(@item_name)));
+END;
+GO
+
+-- 刪除投票項目(deleteItem)
+CREATE PROCEDURE sp_delete_item
+    @item_id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT EXISTS (SELECT 1
+    FROM Vote_Item
+    WHERE id = @item_id)
+    BEGIN
+        RAISERROR (N'錯誤：找不到指定 ID (%d) 的投票項目，無法刪除！', 16, 1, @item_id);
+        RETURN;
+    END
+
+    DELETE FROM Vote_Item WHERE id = @item_id;
 END;
 GO
 
